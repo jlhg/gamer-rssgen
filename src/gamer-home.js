@@ -16,7 +16,7 @@ function doGet(e) {
   rss.setDescription(rssTitle);
 
   var html = UrlFetchApp.fetch(link).getContentText();
-  var p = /<div class="HOME-mainbox1"><!--內容開始-->[^]*?(<img src="https:\/\/p2.bahamut.com.tw\/HOME\/.+?" \/>)[^]*?<a class="TS1" href="(.+?)">(.+?)<\/a>[^]*?<span class="ST1">作者：<a href=".+?">(.+?)<\/a>│(.+?)│.+?<\/span><p>(.+?)\(<a href=".+?" class="BH-txtmore msggoon">繼續閱讀<\/a>\)/g;
+  var p = /<div class="HOME-mainbox1"><!--內容開始-->[^]*?(<img src="https:\/\/p2.bahamut.com.tw\/HOME\/.+?" \/>)[^]*?<a class="TS1" href="(.+?)">(.+?)<\/a>[^]*?<span class="ST1">作者：<a href=".+?">(.+?)<\/a>.*│(.+?)│贊助.+?<\/span><p>(.+?)\(<a href=".+?" class="BH-txtmore msggoon">繼續閱讀<\/a>/g;
   while (m = p.exec(html)) {
     var cover = m[1];
     var path = m[2];
@@ -35,7 +35,7 @@ function doGet(e) {
       title: title,
       link: link + path,
       description: cover + '<br><br>' + desc,
-      pubDate: new Date(pubDate),
+      pubDate: formatDate(pubDate),
       timezone: timezone
     });
   }
@@ -123,4 +123,16 @@ var makeRss = function() {
       return result;
     }
   };
+};
+
+var formatDate = function(dateString) {
+  var p = /(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/;
+  var m = p.exec(dateString);
+  var year = m[1];
+  var month = m[2];
+  var day = m[3];
+  var hour = m[4];
+  var minute = m[5];
+  var second = m[6];
+  return new Date(year, month - 1, day, hour, minute, second);
 };
